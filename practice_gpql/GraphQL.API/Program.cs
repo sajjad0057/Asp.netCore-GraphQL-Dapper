@@ -1,11 +1,27 @@
+using GraphQL.API.Data;
+using GraphQL.API.GraphQL.Mutations;
+using GraphQL.API.GraphQL.Queries;
+using GraphQL.API.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddSingleton<DapperContext>();
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+
+builder.Services
+    .AddGraphQLServer()
+    .AddQueryType<EmployeeQuery>()
+    .AddMutationType<EmployeeMutation>();
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
 
 var app = builder.Build();
 
@@ -21,5 +37,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapGraphQL();
 
 app.Run();
