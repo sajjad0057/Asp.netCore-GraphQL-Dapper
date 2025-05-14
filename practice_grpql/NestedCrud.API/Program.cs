@@ -1,25 +1,23 @@
+using NestedCrud.API.Data;
+using NestedCrud.API.GraphQLSchemas.Mutations;
+using NestedCrud.API.GraphQLSchemas.Queries;
+using NestedCrud.API.GraphQLSchemas.Types;
+using NestedCrud.API.Models.Input;
+using NestedCrud.API.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add services
+builder.Services.AddSingleton<DapperContext>();
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services
+    .AddGraphQLServer()
+    .AddQueryType<EmployeeQuery>()
+    .AddMutationType<EmployeeMutation>()
+    .AddType<EmployeeType>();
+
 
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
+app.MapGraphQL();
 app.Run();
