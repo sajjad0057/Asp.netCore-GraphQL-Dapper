@@ -1,13 +1,15 @@
 ﻿using GraphQL.API.DTOs;
+using GraphQL.API.GraphQL.Subscriptions;
 using GraphQL.API.Models;
 using GraphQL.API.Repositories;
+using HotChocolate.Subscriptions;
 
 namespace GraphQL.API.GraphQL.Mutations;
 
 
 public class EmployeeMutation
 {
-    public Task<Employee> CreateEmployee(CreateEmpoyeeInput input, [Service] IEmployeeRepository repo)
+    public Task<Employee> CreateEmployee(CreateEmpoyeeInput input, [Service] ITopicEventSender topicEventSender, [Service] IEmployeeRepository repo)
     {
         var employee = new Employee
         {
@@ -15,6 +17,9 @@ public class EmployeeMutation
             Department = input.Department,
             Salary = input.Salary
         };
+
+        // Publish an event to notify subscribers about the new employee
+        topicEventSender.SendAsync(nameof(Subscription.OnEmployeeCreated), employee);
 
         return repo.CreateAsync(employee);
     }
