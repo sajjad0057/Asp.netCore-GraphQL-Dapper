@@ -1,0 +1,6 @@
+@NestedCrud.API_HostAddress = http://localhost:5047
+
+GET {{NestedCrud.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
